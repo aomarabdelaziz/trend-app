@@ -8,6 +8,7 @@ pipeline {
     tools {
         maven 'mvn-3.8.5'
     }
+
     environment {
         PATH = "$PATH"
     }
