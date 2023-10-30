@@ -15,9 +15,9 @@ pipeline {
                 git 'https://github.com/aomarabdelaziz/trend-app.git'
             }
         }
-        stage('Install Stage') {
+        stage('Build Stage') {
             steps {
-               sh 'mvn install'
+               sh 'mvn clean deploy'
             }
         }
     }
