@@ -19,7 +19,6 @@ pipeline {
         stage('Build Stage') {
             steps {
                sh 'mvn clean deploy'
-               //sh 'echo HEllo World'
             }
         }
     }
