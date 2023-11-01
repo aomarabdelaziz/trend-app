@@ -1,3 +1,5 @@
+def registry = 'https://trendapp.jfrog.io'
+
 pipeline {
     agent {
         node {
@@ -52,6 +54,31 @@ pipeline {
                 }
             }
         }
-        
+
+        stage ("jar Publish") {
+            steps {
+                script {
+                        echo '<--------------- Jar Publish Started --------------->'
+                        server = Artifactory.newServer url:registry+"/artifactory" ,  credentialsId:"jfrog-cred"
+                        properties = "buildid=${env.BUILD_ID},commitid=${GIT_COMMIT}";
+                        uploadSpec = """{
+                            "files": [
+                                {
+                                "pattern": "jarstaging/(*)",
+                                "target": "libs-release-local/{1}",
+                                "flat": "false",
+                                "props" : "${properties}",
+                                "exclusions": [ "*.sha1", "*.md5"]
+                                }
+                            ]
+                        }"""
+                        buildInfo = server.upload(uploadSpec)
+                        buildInfo.env.collect()
+                        server.publishBuildInfo(buildInfo)
+                        echo '<--------------- Jar Publish Ended --------------->'  
+                
+                }
+            }   
+        }
     }
 }
