@@ -1,4 +1,6 @@
 def registry = 'https://trendapp.jfrog.io'
+def imageName = 'trendapp.jfrog.io/abdelaziz-docker-local/ttrend'
+def version   = '2.1.4'
 
 pipeline {
     agent {
@@ -76,9 +78,31 @@ pipeline {
                         buildInfo.env.collect()
                         server.publishBuildInfo(buildInfo)
                         echo '<--------------- Jar Publish Ended --------------->'  
-                
                 }
             }   
         }
+
+
+        stage(" Docker Build ") {
+            steps {
+                script {
+                echo '<--------------- Docker Build Started --------------->'
+                app = docker.build(imageName+":"+version)
+                echo '<--------------- Docker Build Ends --------------->'
+                }
+            }
+        }
+
+        stage (" Docker Publish "){
+                steps {
+                    script {
+                    echo '<--------------- Docker Publish Started --------------->'  
+                        docker.withRegistry(registry, 'jfrog-cred'){
+                            app.push()
+                        }    
+                    echo '<--------------- Docker Publish Ended --------------->'  
+                    }
+                }
+            }
     }
 }
